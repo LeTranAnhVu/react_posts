@@ -1,26 +1,28 @@
 import React from "react";
-import jsonPlaceholder from "../apis/jsonPlaceholder";
-
+import _ from "lodash";
+import {connect} from "react-redux";
 
 class UserInfo extends React.Component {
-    state = {user: {}};
-    fetchUser = async (userId) => {
-        const user = (await jsonPlaceholder.get(`users/${userId}`)).data;
-        this.setState({
-            user: user
-        });
+    renderUser = () => {
+        const {user} = this.props;
+        if (user) {
+            return (
+                <div>{user.name}</div>
+            )
+        }
+        return null;
     };
 
-    componentDidMount() {
-        this.fetchUser(this.props.userId);
-    }
-
     render() {
-        return (
-            <div>{this.state.user.name || ''}</div>
-        )
+        return this.renderUser()
     }
 };
 
 
-export default UserInfo;
+const mapState2Props = (state, ownProps) => {
+    return {
+        user: _.find(state.users, (user) => user.id === ownProps.userId)
+    }
+}
+
+export default connect(mapState2Props)(UserInfo);
